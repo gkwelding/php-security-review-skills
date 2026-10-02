@@ -1,0 +1,23 @@
+{
+  "name": "php-security-review-skills",
+  "displayName": "PHP Security Review Skills",
+  "description": "Security review for PHP, Laravel and Symfony code. Traces each candidate through middleware, policies, voters, casts and escaping, then reports findings with file:line, an exploit scenario, severity and the framework-idiomatic fix, plus what was checked and found safe. Read-only.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Black Pug Ltd"
+  },
+  "license": "MIT",
+  "keywords": [
+    "php",
+    "laravel",
+    "symfony",
+    "security",
+    "code-review",
+    "owasp",
+    "doctrine",
+    "twig",
+    "blade"
+  ],
+  "homepage": "https://github.com/gkwelding/php-security-review-skills",
+  "repository": "https://github.com/gkwelding/php-security-review-skills"
+}

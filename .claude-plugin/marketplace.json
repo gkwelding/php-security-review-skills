@@ -1,0 +1,25 @@
+{
+  "name": "php-security-review-skills",
+  "description": "Security review skills for PHP projects.",
+  "owner": {
+    "name": "Black Pug Ltd"
+  },
+  "plugins": [
+    {
+      "name": "php-security-review-skills",
+      "source": "./",
+      "displayName": "PHP Security Review Skills",
+      "description": "Review PHP, Laravel and Symfony code for security vulnerabilities, with framework-specific checks.",
+      "license": "MIT",
+      "category": "security",
+      "keywords": [
+        "php",
+        "laravel",
+        "symfony",
+        "security",
+        "code-review"
+      ],
+      "repository": "https://github.com/gkwelding/php-security-review-skills"
+    }
+  ]
+}
