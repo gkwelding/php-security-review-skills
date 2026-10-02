@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Customers</h1>
+    <table>
+        {% for customer in customers %}
+            <tr><td>{{ customer.displayName }}</td><td>{{ customer.email }}</td><td>{{ customer.street }}, {{ customer.city }} {{ customer.postcode }}</td></tr>
+        {% endfor %}
+    </table>
+{% endblock %}

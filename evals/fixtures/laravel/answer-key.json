@@ -1,0 +1,97 @@
+{
+    "planted": [
+        {
+            "id": "lv-ticket-idor",
+            "class": "access-control",
+            "file": "app/Http/Controllers/TicketController.php",
+            "lines": [11, 14],
+            "description": "TicketController@show (GET /tickets/{ticket}, routes/web.php:25) has only the auth middleware and no policy check, unlike download(). Any signed-in user can view any ticket, including the holder's name and email."
+        },
+        {
+            "id": "lv-profile-mass-assignment",
+            "class": "mass-assignment",
+            "file": "app/Http/Controllers/ProfileController.php",
+            "lines": [18, 18],
+            "description": "update() passes $request->except([...]) (a deny-list of the raw request) to User::update(), and User's #[Fillable] (app/Models/User.php:13) includes is_organiser. A user can make themselves an organiser."
+        },
+        {
+            "id": "lv-search-sqli",
+            "class": "sql-injection",
+            "file": "app/Http/Controllers/EventController.php",
+            "lines": [22, 22],
+            "description": "index() concatenates the q query parameter into whereRaw(\"title LIKE '%...%'\") with no bindings. Unauthenticated SQL injection on GET /events (max:100 validation doesn't help)."
+        },
+        {
+            "id": "lv-review-markdown-xss",
+            "class": "xss",
+            "file": "resources/views/events/show.blade.php",
+            "lines": [13, 13],
+            "description": "Review bodies written by any signed-in user (EventController@review) are rendered with {!! Str::markdown($review->body) !!}. Str::markdown allows raw HTML and unsafe links by default, so this is stored XSS on the public event page."
+        },
+        {
+            "id": "lv-webhook-unverified",
+            "class": "csrf",
+            "file": "app/Http/Controllers/PaymentWebhookController.php",
+            "lines": [10, 20],
+            "description": "webhooks/* is exempt from CSRF (bootstrap/app.php:15, preventRequestForgery except) and the payment webhook never verifies a provider signature. Anyone can POST payment.succeeded with a ticket reference and mark it paid."
+        },
+        {
+            "id": "lv-locale-open-redirect",
+            "class": "open-redirect",
+            "file": "app/Http/Controllers/LocaleController.php",
+            "lines": [15, 15],
+            "description": "switch() redirects to the back query parameter unchanged (redirect($request->query('back'))), so /locale/en?back=https://evil.example sends users to any site."
+        },
+        {
+            "id": "lv-ticket-path-traversal",
+            "class": "path-traversal",
+            "file": "app/Http/Controllers/TicketController.php",
+            "lines": [20, 22],
+            "description": "download() appends the file query parameter to a storage path passed to response()->download(). The policy check covers the ticket, not the file name, so file=../../../../.env reads arbitrary files."
+        },
+        {
+            "id": "lv-basket-unserialize",
+            "class": "object-injection",
+            "file": "app/Http/Controllers/BasketController.php",
+            "lines": [11, 11],
+            "description": "restore() calls unserialize() on the hex-decoded saved_basket request field. Object injection (possible RCE through gadget chains) for any signed-in user."
+        },
+        {
+            "id": "lv-attendees-exposure",
+            "class": "data-exposure",
+            "file": "app/Http/Controllers/EventController.php",
+            "lines": [48, 51],
+            "description": "attendees() returns the attendee User models as JSON. User hides only password and remember_token (app/Models/User.php:14), so every attendee's api_token (and phone, email) goes to the organiser."
+        }
+    ],
+    "decoys": [
+        {
+            "id": "lv-decoy-whereraw-bound",
+            "class": "sql-injection",
+            "file": "app/Http/Controllers/EventController.php",
+            "lines": [21, 21],
+            "description": "whereRaw('LOWER(city) = ?', [...]) passes the city as a binding. Safe."
+        },
+        {
+            "id": "lv-decoy-orderby-direction",
+            "class": "sql-injection",
+            "file": "app/Http/Controllers/EventController.php",
+            "lines": [23, 23],
+            "description": "orderBy() takes the dir query parameter unvalidated, but the column is validated with Rule::in and Laravel's orderBy() throws on any direction other than asc/desc. Safe."
+        },
+        {
+            "id": "lv-decoy-tag-badges",
+            "class": "xss",
+            "file": "resources/views/events/show.blade.php",
+            "lines": [7, 7],
+            "description": "{!! $event->tagBadges() !!} prints an HtmlString, but Event::tagBadges() (app/Models/Event.php:30-38) escapes every tag with e() before wrapping it. Safe."
+        },
+        {
+            "id": "lv-decoy-scoped-destroy",
+            "class": "access-control",
+            "file": "app/Http/Controllers/TicketController.php",
+            "lines": [25, 30],
+            "description": "destroy() has no policy call, but looks the ticket up through $request->user()->tickets()->findOrFail($id), so only the user's own tickets can be deleted. Safe."
+        }
+    ]
+}

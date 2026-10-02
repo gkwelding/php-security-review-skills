@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Receipt for order {{ order.id }}</h1>
+    <p>{{ order.customer.displayName }}, {{ order.customer.email }}</p>
+    <p>Deliver to: {{ order.deliveryAddress }}</p>
+    <p>Total: {{ (order.totalInPence / 100)|number_format(2) }}</p>
+    <form method="post" action="{{ path('app_order_cancel', {id: order.id}) }}">
+        <input type="hidden" name="_token" value="{{ csrf_token('cancel-order') }}">
+        <button>Cancel order</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,97 @@
+{
+    "planted": [
+        {
+            "id": "sf-manage-access-control",
+            "class": "access-control",
+            "file": "config/packages/security.yaml",
+            "lines": [32, 32],
+            "description": "The ^/manage access_control rule is limited to methods POST, PUT, DELETE and ManageController has no #[IsGranted], so GET /manage/customers (src/Controller/ManageController.php:18-24) lists every customer's name, email and address to anonymous visitors."
+        },
+        {
+            "id": "sf-receipt-idor",
+            "class": "access-control",
+            "file": "src/Controller/OrderController.php",
+            "lines": [17, 22],
+            "description": "receipt() resolves Order from the URL id and checks only ROLE_USER, not ownership. Any signed-in user can read any order's receipt (customer name, email, address)."
+        },
+        {
+            "id": "sf-category-dql-injection",
+            "class": "sql-injection",
+            "file": "src/Repository/ProductRepository.php",
+            "lines": [27, 27],
+            "description": "search() concatenates the category query parameter into andWhere() DQL. Unauthenticated DQL injection on GET /products."
+        },
+        {
+            "id": "sf-account-serializer-mass-assignment",
+            "class": "mass-assignment",
+            "file": "src/Controller/AccountController.php",
+            "lines": [41, 43],
+            "description": "update() deserializes the JSON body into the current User with OBJECT_TO_POPULATE and no groups, so setRoles(), setEmail() and setApiToken() are reachable. A user can grant themselves ROLE_STAFF."
+        },
+        {
+            "id": "sf-paragraphs-filter-xss",
+            "class": "xss",
+            "file": "src/Twig/AppExtension.php",
+            "lines": [13, 21],
+            "description": "The paragraphs filter is declared is_safe html but wraps the input in <p> and nl2br() without escaping it. Applied to member.bio on the public member page (templates/member/show.html.twig:5), it is stored XSS."
+        },
+        {
+            "id": "sf-image-import-ssrf",
+            "class": "ssrf",
+            "file": "src/Controller/ManageController.php",
+            "lines": [33, 34],
+            "description": "importImage() fetches the posted image_url with HttpClient (no NoPrivateNetworkHttpClient, redirects followed) and writes the response under public/, so staff can read internal services or cloud metadata."
+        },
+        {
+            "id": "sf-report-shell-injection",
+            "class": "shell-injection",
+            "file": "src/Service/ReportExporter.php",
+            "lines": [26, 27],
+            "description": "export() builds a shell command line with Process::fromShellCommandline() from the name request field (ManageController.php:46). Command injection for staff."
+        },
+        {
+            "id": "sf-member-json-exposure",
+            "class": "data-exposure",
+            "file": "src/Controller/MemberController.php",
+            "lines": [18, 22],
+            "description": "GET /api/members/{id} returns $this->json($member) with no groups, which serializes every getter of User: password hash, apiToken, roles, email and address. Public."
+        }
+    ],
+    "decoys": [
+        {
+            "id": "sf-decoy-like-parameter",
+            "class": "sql-injection",
+            "file": "src/Repository/ProductRepository.php",
+            "lines": [23, 23],
+            "description": "The name filter concatenates % into the parameter value, not the DQL: andWhere('p.name LIKE :term')->setParameter(...). Safe."
+        },
+        {
+            "id": "sf-decoy-orderby-direction",
+            "class": "sql-injection",
+            "file": "src/Repository/ProductRepository.php",
+            "lines": [30, 30],
+            "description": "orderBy('p.priceInPence', $priceOrder) takes the direction from the price query parameter, but doctrine/orm 3.7 (the installed version) validates string directions in QueryBuilder::getSortDirection() and throws on anything but asc/desc. Safe on this version (it was concatenated up to ORM 3.6)."
+        },
+        {
+            "id": "sf-decoy-allow-extra-fields",
+            "class": "mass-assignment",
+            "file": "src/Form/AddressType.php",
+            "lines": [26, 26],
+            "description": "allow_extra_fields only suppresses the extra-fields error; extra keys are never mapped onto User. Safe."
+        },
+        {
+            "id": "sf-decoy-json-in-script",
+            "class": "xss",
+            "file": "templates/product/show.html.twig",
+            "lines": [8, 8],
+            "description": "{{ product_data|json_encode|raw }} inside <script>: json_encode escapes /, so a description containing </script> can't close the tag, and the JSON is a JS literal. Safe."
+        },
+        {
+            "id": "sf-decoy-scoped-cancel",
+            "class": "access-control",
+            "file": "src/Controller/OrderController.php",
+            "lines": [24, 38],
+            "description": "cancel() has no voter or #[IsGranted], but ^/orders requires ROLE_USER, it checks a CSRF token, and it loads the order with findOneBy(['id' => $id, 'customer' => $this->getUser()]). Safe."
+        }
+    ]
+}

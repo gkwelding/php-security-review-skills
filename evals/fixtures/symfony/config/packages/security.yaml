@@ -1,0 +1,43 @@
+security:
+    password_hashers:
+        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: email
+
+    role_hierarchy:
+        ROLE_STAFF: ROLE_USER
+
+    firewalls:
+        dev:
+            pattern: ^/(_profiler|_wdt|assets|build)/
+            security: false
+        main:
+            lazy: true
+            provider: app_user_provider
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+            login_throttling:
+                max_attempts: 5
+            logout:
+                path: app_logout
+                enable_csrf: true
+
+    access_control:
+        - { path: ^/manage, roles: ROLE_STAFF, methods: [POST, PUT, DELETE] }
+        - { path: ^/account, roles: ROLE_USER }
+        - { path: ^/orders, roles: ROLE_USER }
+
+when@test:
+    security:
+        password_hashers:
+            Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

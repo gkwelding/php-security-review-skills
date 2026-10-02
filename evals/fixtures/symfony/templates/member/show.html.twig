@@ -1,0 +1,6 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{{ member.displayName }}</h1>
+    <section class="bio">{{ member.bio|paragraphs }}</section>
+{% endblock %}

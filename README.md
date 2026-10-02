@@ -80,13 +80,18 @@ skills/
         ├── laravel/     # authorisation, mass assignment/exposure, queries/views, HTTP surface/config
         └── symfony/     # access control, forms/serializer, Doctrine/Twig, HTTP surface/config
 scripts/build-skills.sh  # packages dist/*.skill for claude.ai
+evals/                   # with/without-skill comparison on Laravel and Symfony fixtures
 ```
 
 ## Status
 
 First version. The APIs, config keys, defaults and version differences the rules name were checked against the sources of Laravel 10.50, 11.57, 12.69 and 13.34 (plus their skeletons), Symfony 6.4, 7.4 and 8.1, Doctrine ORM 2.20 and 3.7, DBAL 4.5, Twig 3.30, fruitcake/php-cors 1.4, nelmio/cors-bundle 2.6 and league/commonmark 2.10. Treat it as a strong checklist, not a guarantee.
 
-There's no eval yet. The plan: a small Laravel app and a small Symfony app with planted vulnerabilities across the covered classes, plus look-alike code that is safe (scoped bindings, `validated()` with narrow rules, `allow_extra_fields`, escaped output). Each run is scored on recall (planted issues found, with the right location and class), false positives (safe look-alikes reported), and severity agreement, with and without the skill.
+## Evals
+
+[`evals/`](evals/README.md) reviews a small Laravel 13 app and a small Symfony 8.1 app with and without the skill. Each app has 8-9 planted vulnerabilities and 4-5 safe look-alikes, listed in an answer key. A blind, tool-less matcher call maps each report to the key, and each run is scored on recall (overall and per class), decoys flagged, findings matching nothing, cost, turns, time and report length.
+
+First result, one sample on the Laravel app with the default model: both variants found all 9 planted issues and flagged no decoy. The skill reported nothing outside the key (the baseline had 2 hardening notes) and listed every decoy as checked and safe, but cost 2.1x more ($0.77 against $0.37). The Laravel fixture is too easy to separate the variants on recall yet.
 
 ## Licence
 

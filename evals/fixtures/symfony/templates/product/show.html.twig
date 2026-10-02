@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.description }}</p>
+    <div id="basket-button"></div>
+    <script>
+        const product = {{ product_data|json_encode|raw }};
+    </script>
+{% endblock %}
