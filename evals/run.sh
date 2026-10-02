@@ -33,13 +33,14 @@ scaffold() {
         rm -rf "$dir"
         case $fw in
             laravel)
-                composer create-project -n --quiet laravel/laravel "$dir" ;;
+                # Laravel 13 skeletons ship CLAUDE.md/AGENTS.md telling agents to install Laravel Boost; a run that follows it adds ~75 files and skews the scores.
+                composer create-project -n --quiet laravel/laravel "$dir" && rm -f "$dir/CLAUDE.md" "$dir/AGENTS.md" ;;
             symfony)
                 composer create-project -n --quiet symfony/skeleton "$dir"
                 (cd "$dir" && composer require -n --quiet symfony/security-bundle symfony/orm-pack symfony/twig-bundle \
                     symfony/form symfony/serializer-pack symfony/http-client symfony/process symfony/validator symfony/rate-limiter) ;;
         esac
-        (cd "$dir" && git init -q)
+        (cd "$dir" && git init -q && git config core.longpaths true)
     fi
 
     # Copy fixtures on every run so edits reach an existing scaffold. Package changes need a fresh
