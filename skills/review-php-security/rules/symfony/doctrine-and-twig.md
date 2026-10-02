@@ -24,7 +24,7 @@ $qb->where('p.title LIKE :term')->setParameter('term', '%' . $term . '%');
 
 ### orderBy and Field Names
 
-`QueryBuilder::orderBy($sort, $order)` / `addOrderBy()` concatenate **both** arguments into the DQL (ORM 2.20 and 3.x). Unlike Laravel, the direction string is not validated. Field names in `where()`, `select()` and `expr()` calls are DQL too.
+`QueryBuilder::orderBy($sort, $order)` / `addOrderBy()` concatenate `$sort` into the DQL unvalidated in every version. The direction is concatenated unvalidated too up to ORM 3.6; from 3.7 `orderBy()` / `addOrderBy()` throw `InvalidArgumentException` for anything but asc/desc, but `new Expr\OrderBy($sort, $order)` still concatenates it, so check how the order is built. Field names in `where()`, `select()` and `expr()` calls are DQL too.
 
 **Incorrect:**
 ```php
