@@ -66,9 +66,10 @@ run_one() {
     fi
 
     echo "== $name"
-    # MSYS_NO_PATHCONV stops Git Bash on Windows rewriting "/review-php-security" into a file path.
+    # Prompt on stdin: as an argument, Git Bash rewrites "/review-php-security" into a file path, and MSYS_NO_PATHCONV
+    # would leak into Claude's own shell. --setting-sources project keeps user plugins and hooks out.
     # Read-only: Claude may read and search files, nothing else.
-    (cd "$dir" && MSYS_NO_PATHCONV=1 MSYS2_ARG_CONV_EXCL='*' claude -p "$prompt" ${MODEL:+--model "$MODEL"} \
+    (cd "$dir" && printf '%s' "$prompt" | claude -p --setting-sources project ${MODEL:+--model "$MODEL"} \
         --max-budget-usd "$budget" --no-session-persistence --output-format json --allowedTools "Read,Glob,Grep" \
         > "$out.claude.json" 2> "$out.claude.err") || echo "   claude exited non-zero, see $results/$name.claude.err"
     (cd "$dir" && php -r '$j = json_decode((string) @file_get_contents($argv[1]), true); file_put_contents($argv[2], $j["result"] ?? "");' \

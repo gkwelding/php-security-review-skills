@@ -56,7 +56,7 @@ EOF
     } > "$name.match-prompt.txt"
 
     echo "== matching $name"
-    claude -p --tools "" --output-format json --json-schema "$schema" --max-budget-usd "$budget" \
+    claude -p --tools "" --setting-sources project --output-format json --json-schema "$schema" --max-budget-usd "$budget" \
         --no-session-persistence ${MODEL:+--model "$MODEL"} \
         < "$name.match-prompt.txt" > "$name.match.json" 2> "$name.match.err" || echo "   matcher failed, see $name.match.err"
 
