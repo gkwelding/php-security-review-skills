@@ -27,8 +27,8 @@ Fixing is left to a normal follow-up request. A separate fix skill can be added 
 ### Claude Code plugin
 
 ```
-/plugin marketplace add gkwelding/php-security-review-skills
-/plugin install php-security-review-skills@php-security-review-skills
+/plugin marketplace add gkwelding/php-unit-tests-skills
+/plugin install php-security-review-skills@blackpug
 ```
 
 The command becomes `/php-security-review-skills:review-php-security <target>`.
